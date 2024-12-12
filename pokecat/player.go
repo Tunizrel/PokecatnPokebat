@@ -6,22 +6,21 @@ import (
 	"net"
 	"os"
 	"os/exec"
-	"os/signal" // Import the signal package to handle interrupts
+	"os/signal"
 	"github.com/eiannone/keyboard"
-	"sync" // Import the sync package for Mutex
+	"sync"
 	"time"
 )
 
 const GridSize = 20
 
-// Pokemon represents a Pokémon structure
 type Pokemon struct {
 	ID           string            `json:"id"`
 	Name         string            `json:"name"`
 	Types        []string          `json:"types"`
-	Stats        map[string]string `json:"stats"`  // Change to map[string]string to store stats as strings
+	Stats        map[string]string `json:"stats"`
 	Exp          string            `json:"exp"`
-	WhenAttacked map[string]string `json:"when_attacked"` // Keep as map[string]string
+	WhenAttacked map[string]string `json:"when_attacked"`
 	X            int
 	Y            int
 }
@@ -30,10 +29,9 @@ var lastNotification string
 var grid [GridSize][GridSize]rune
 var playerX, playerY int
 var pokemons []Pokemon
-var mu sync.Mutex // Declare the global mutex
+var mu sync.Mutex
 
 func main() {
-	// Capture interrupt signal
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	go func() {
@@ -43,36 +41,58 @@ func main() {
 		os.Exit(0)
 	}()
 
-	// Ask for player name
-	var playerName string
+	var playerName, password string
 	fmt.Print("Enter your name: ")
 	fmt.Scanln(&playerName)
-	
-	fmt.Printf("Welcome %s To Pokecat!!!\n", playerName)
-	drawTitle()
-	time.Sleep(2 * time.Second)
+
 	conn, err := net.Dial("tcp", "localhost:8080")
 	if err != nil {
 		fmt.Printf("Failed to connect to server: %v\n", err)
 		os.Exit(1)
 	}
-	defer func() {
-		conn.Close()
-		keyboard.Close()
-	}()
+	defer conn.Close()
+
+	// Send player name to server for authentication
+	fmt.Print("Enter your password: ")
+	fmt.Scanln(&password)
+	authData := map[string]string{"name": playerName, "password": password}
+	authBytes, _ := json.Marshal(authData)
+	conn.Write(authBytes)
+
+	// Receive authentication response
+	buffer := make([]byte, 2048)
+	n, err := conn.Read(buffer)
+	if err != nil {
+		fmt.Printf("Failed to read authentication response: %v\n", err)
+		return
+	}
+
+	var authResponse map[string]interface{}
+	err = json.Unmarshal(buffer[:n], &authResponse)
+	if err != nil {
+		fmt.Printf("Failed to parse authentication response: %v\n", err)
+		return
+	}
+
+	if authResponse["status"] == "success" {
+		fmt.Printf("Welcome %s To Pokecat!!!\n", playerName)
+		drawTitle()
+		time.Sleep(2 * time.Second)
+	} else {
+		fmt.Println("Authentication failed. Exiting.")
+		return
+	}
 
 	// Initialize player position
 	playerX, playerY = GridSize/2, GridSize/2
 
 	// Receive Pokémon data from server
-	buffer := make([]byte, 2048) // Increase buffer size
-	n, err := conn.Read(buffer)
+	n, err = conn.Read(buffer)
 	if err != nil {
 		fmt.Printf("Failed to read Pokémon data: %v\n", err)
 		return
 	}
 
-	// Log the raw data to debug
 	fmt.Printf("Received data: %s\n", string(buffer[:n]))
 
 	err = json.Unmarshal(buffer[:n], &pokemons)
@@ -81,10 +101,8 @@ func main() {
 		return
 	}
 
-	// Initialize grid with player and Pokémon
 	initGrid()
 
-	// Enable keyboard input
 	err = keyboard.Open()
 	if err != nil {
 		fmt.Printf("Failed to initialize keyboard: %v\n", err)
@@ -92,7 +110,6 @@ func main() {
 	}
 	defer keyboard.Close()
 
-	// Game loop
 	for {
 		printGrid()
 		_, key, err := keyboard.GetKey()
@@ -101,17 +118,14 @@ func main() {
 			break
 		}
 
-		// Handle player movement
 		if handleMovement(key) {
 			break
 		}
 
-		// Check for Pokémon capture
 		checkCapture(playerName)
 	}
 }
 
-// Initialize the grid with Pokémon and player
 func initGrid() {
 	clearGrid()
 	drawTitle()
@@ -123,7 +137,6 @@ func initGrid() {
 	grid[playerY][playerX] = '💂'
 }
 
-// Clear the grid
 func clearGrid() {
 	for i := 0; i < GridSize; i++ {
 		for j := 0; j < GridSize; j++ {
@@ -132,7 +145,6 @@ func clearGrid() {
 	}
 }
 
-// Print the grid to the terminal
 func printGrid() {
 	clearScreen()
 	drawTitle()
@@ -144,13 +156,14 @@ func printGrid() {
 	}
 
 	if lastNotification != "" {
-		fmt.Println("\n" + lastNotification) // Display the last notification
-		lastNotification = ""               // Clear the notification after displaying it
+		fmt.Println("\n" + lastNotification)
+		lastNotification = ""
 	}
-	if len(pokemons) == 0 {	
+	if len(pokemons) == 0 {
 		drawCongrats()
 	}
 }
+
 func drawCongrats() {
 	fmt.Println("░█████╗░░█████╗░███╗░░██╗░██████╗░██████╗░░█████╗░████████╗░██████╗")
 	fmt.Println("██╔══██╗██╔══██╗████╗░██║██╔════╝░██╔══██╗██╔══██╗╚══██╔══╝██╔════╝")
@@ -158,7 +171,11 @@ func drawCongrats() {
 	fmt.Println("██║░░██╗██║░░██║██║╚████║██║░░╚██╗██╔══██╗██╔══██║░░░██║░░░░╚═══██╗")
 	fmt.Println("╚█████╔╝╚█████╔╝██║░╚███║╚██████╔╝██║░░██║██║░░██║░░░██║░░░██████╔╝")
 	fmt.Println("░╚════╝░░╚════╝░╚═╝░░╚══╝░╚═════╝░╚═╝░░╚═╝╚═╝░░╚═╝░░░╚═╝░░░╚═════╝░")
+	fmt.Println("\n Congratulations! You've caught all the Pokémon!")
+	fmt.Println(" Exiting the game. Goodbye!")
+	fmt.Println("=========================================================================\n")
 }
+
 func drawTitle() {
 	fmt.Println("                                  ,'\\")
 	fmt.Println("    _.----.        ____         ,'  _\\   ___    ___     ____")
@@ -173,7 +190,7 @@ func drawTitle() {
 	fmt.Println("        \\_.-'       |__|    `-._ |              '-.|     '-.| |   |")
 	fmt.Println("                                `'                            '-._|")
 }
-// Handle player movement
+
 func handleMovement(key keyboard.Key) bool {
 	grid[playerY][playerX] = '.'
 
@@ -202,7 +219,6 @@ func handleMovement(key keyboard.Key) bool {
 	return false
 }
 
-// Clear the terminal screen
 func clearScreen() {
 	cmd := exec.Command("clear")
 	if os.Getenv("OS") == "Windows_NT" {
@@ -211,23 +227,21 @@ func clearScreen() {
 	cmd.Stdout = os.Stdout
 	cmd.Run()
 }
+
 var caughtPokemons []Pokemon
 
-// Save player data to a JSON file
 func savePlayerData(playerName string, pokemons []Pokemon) {
-	// Lock the mutex to ensure only one goroutine can access this section
 	mu.Lock()
 	defer mu.Unlock()
 
-	// Open the file for reading and writing
-	file, err := os.OpenFile("../player_data.json", os.O_RDWR|os.O_CREATE, 0644)
+	// Open the player data file
+	file, err := os.OpenFile("./player_data.json", os.O_RDWR|os.O_CREATE, 0644)
 	if err != nil {
 		fmt.Printf("Failed to open player data file: %v\n", err)
 		return
 	}
 	defer file.Close()
 
-	// Read the existing data from the file
 	var allPlayers []map[string]interface{}
 	decoder := json.NewDecoder(file)
 	err = decoder.Decode(&allPlayers)
@@ -236,7 +250,7 @@ func savePlayerData(playerName string, pokemons []Pokemon) {
 		return
 	}
 
-	// Remove X and Y from each Pokémon before saving
+	// Prepare the Pokémon data to be added
 	var cleanedPokemons []map[string]interface{}
 	for _, p := range pokemons {
 		cleanedPokemon := map[string]interface{}{
@@ -250,42 +264,76 @@ func savePlayerData(playerName string, pokemons []Pokemon) {
 		cleanedPokemons = append(cleanedPokemons, cleanedPokemon)
 	}
 
-	// Create new player data with cleaned Pokémon list
-	playerData := map[string]interface{}{
-		"player_name": playerName,
-		"pokemons":    cleanedPokemons,
+	playerFound := false
+	for i, player := range allPlayers {
+		if player["player_name"] == playerName {
+			// Check if player already has the Pokémon
+			if existingPokemons, ok := player["pokemons"].([]interface{}); ok {
+				existingIDs := make(map[string]bool)
+				for _, ep := range existingPokemons {
+					if epMap, ok := ep.(map[string]interface{}); ok {
+						if id, ok := epMap["id"].(string); ok {
+							existingIDs[id] = true
+						}
+					}
+				}
+
+				// Add only new Pokémon
+				for _, newPokemon := range cleanedPokemons {
+					if id, ok := newPokemon["id"].(string); ok {
+						if !existingIDs[id] {
+							existingPokemons = append(existingPokemons, newPokemon)
+						}
+					}
+				}
+
+				// Update the player's Pokémon list
+				allPlayers[i]["pokemons"] = existingPokemons
+			} else {
+				// If "pokemons" is not correctly structured, replace it
+				allPlayers[i]["pokemons"] = cleanedPokemons
+			}
+			playerFound = true
+			break
+		}
 	}
 
-	// Append the new player data to the slice
-	allPlayers = append(allPlayers, playerData)
+	if !playerFound {
+		// Add a new player if not found
+		playerData := map[string]interface{}{
+			"player_name": playerName,
+			"pokemons":    cleanedPokemons,
+		}
+		allPlayers = append(allPlayers, playerData)
+	}
 
-	// Move the file pointer back to the beginning to overwrite
+	// Write updated data back to the file
 	file.Seek(0, 0)
+	file.Truncate(0) // Clear existing content
 
-	// Marshal the updated data to JSON
 	data, err := json.MarshalIndent(allPlayers, "", "  ")
 	if err != nil {
 		fmt.Printf("Failed to marshal player data: %v\n", err)
 		return
 	}
 
-	// Write the updated data to the file
 	_, err = file.Write(data)
 	if err != nil {
 		fmt.Printf("Failed to write player data to file: %v\n", err)
 	}
 }
 
-// Check if player captured a Pokémon
+
+
+
 func checkCapture(playerName string) {
 	for i, p := range pokemons {
 		if p.X == playerX && p.Y == playerY {
-			lastNotification = fmt.Sprintf("You caught a Pokémon: %s (ID: %s, Types: %s, Stats: %s, Exp: %s, When Attacked: %s)!", p.Name, p.ID, p.Types, p.Stats, p.Exp, p.WhenAttacked)
-			caughtPokemons = append(caughtPokemons, p) // Add caught Pokémon to the temporary array
-			pokemons = append(pokemons[:i], pokemons[i+1:]...) // Remove caught Pokémon
-			grid[p.Y][p.X] = '👍' // Keep player position on grid
+			lastNotification = fmt.Sprintf("You caught a Pokémon: %s (ID: %s)!", p.Name, p.ID)
+			caughtPokemons = append(caughtPokemons, p)
+			pokemons = append(pokemons[:i], pokemons[i+1:]...)
+			grid[p.Y][p.X] = '👍'
 
-			// Check if all Pokémon are caught
 			if len(pokemons) == 0 {
 				savePlayerData(playerName, caughtPokemons)
 				grid[playerY][playerX] = '🏆'
@@ -294,7 +342,7 @@ func checkCapture(playerName string) {
 
 				os.Exit(0)
 			}
-			return // Exit after handling the captured Pokémon
+			return
 		}
 	}
 }

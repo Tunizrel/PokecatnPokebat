@@ -120,7 +120,11 @@ func handlePlayer(conn net.Conn) {
 		log.Printf("Player disconnected: %s", conn.RemoteAddr())
 		conn.Close()
 	}()
-
+	if !authenticatePlayer(conn) {
+		log.Printf("Authentication failed for %s", conn.RemoteAddr())
+		conn.Close()
+		return
+	}
 	mutex.Lock()
 	selectedPokemons := chooseRandomPokemons()
 	mutex.Unlock()
@@ -140,7 +144,57 @@ func handlePlayer(conn net.Conn) {
 
 	log.Printf("Sent %d Pokémon to %s", len(selectedPokemons), conn.RemoteAddr())
 	for _, pokemon := range selectedPokemons {
-		log.Printf("Sent Pokémon: ID=%s, Name=%s, Types=%v, Stats=%v, Exp=%s, WhenAttacked=%v, X=%d, Y=%d",
-			pokemon.ID, pokemon.Name, pokemon.Types, pokemon.Stats, pokemon.Exp, pokemon.WhenAttacked, pokemon.X, pokemon.Y)
+		log.Printf("Sent Pokémon: ID=%s, Name=%s",
+			pokemon.ID, pokemon.Name)
 	}
+}
+// authenticatePlayer authenticates the player using the provided credentials
+func authenticatePlayer(conn net.Conn) bool {
+	buffer := make([]byte, 2048)
+	n, err := conn.Read(buffer)
+	if err != nil {
+		log.Printf("Failed to read authentication data: %v", err)
+		return false
+	}
+
+	var authData map[string]string
+	if err := json.Unmarshal(buffer[:n], &authData); err != nil {
+		log.Printf("Failed to parse authentication data: %v", err)
+		return false
+	}
+
+	accounts, err := loadAccountsData("../accounts.json")
+	if err != nil {
+		log.Printf("Failed to load accounts data: %v", err)
+		return false
+	}
+
+	for _, account := range accounts {
+		if account["Name"] == authData["name"] && account["Password"] == authData["password"] {
+			response := map[string]string{"status": "success"}
+			responseBytes, _ := json.Marshal(response)
+			conn.Write(responseBytes)
+			return true
+		}
+	}
+
+	log.Println("Authentication failed. Exiting.")
+	response := map[string]string{"status": "failure"}
+	responseBytes, _ := json.Marshal(response)
+	conn.Write(responseBytes)
+	return false
+}
+
+// loadAccountsData loads account data from a JSON file
+func loadAccountsData(filename string) ([]map[string]string, error) {
+	file, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load accounts data file: %v", err)
+	}
+	var accounts []map[string]string
+	if err := json.Unmarshal(file, &accounts); err != nil {
+		return nil, fmt.Errorf("failed to parse accounts data: %v", err)
+	}
+	log.Printf("Loaded %d accounts from %s", len(accounts), filename)
+	return accounts, nil
 }

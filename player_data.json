@@ -1,0 +1,161 @@
+[
+  {
+    "player_name": "duccap",
+    "pokemons": [
+      {
+        "exp": "68",
+        "id": "109",
+        "name": "Koffing",
+        "stats": {
+          "Attack": "65",
+          "Defense": "95",
+          "HP": "40",
+          "Sp Atk": "60",
+          "Sp Def": "45",
+          "Speed": "35"
+        },
+        "types": [
+          "poison"
+        ],
+        "when_attacked": {
+          "bug": "0.5x",
+          "fairy": "0.5x",
+          "fighting": "0.5x",
+          "grass": "0.5x",
+          "ground": "2x",
+          "poison": "0.5x",
+          "psychic": "2x"
+        }
+      },
+      {
+        "exp": "61",
+        "id": "48",
+        "name": "Venonat",
+        "stats": {
+          "Attack": "55",
+          "Defense": "50",
+          "HP": "60",
+          "Sp Atk": "40",
+          "Sp Def": "55",
+          "Speed": "45"
+        },
+        "types": [
+          "bug",
+          "poison"
+        ],
+        "when_attacked": {
+          "bug": "0.5x",
+          "fairy": "0.5x",
+          "fighting": "0.25x",
+          "fire": "2x",
+          "flying": "2x",
+          "grass": "0.25x",
+          "poison": "0.5x",
+          "psychic": "2x",
+          "rock": "2x"
+        }
+      },
+      {
+        "exp": "184",
+        "id": "135",
+        "name": "Jolteon",
+        "stats": {
+          "Attack": "65",
+          "Defense": "60",
+          "HP": "65",
+          "Sp Atk": "110",
+          "Sp Def": "95",
+          "Speed": "130"
+        },
+        "types": [
+          "electric"
+        ],
+        "when_attacked": {
+          "electric": "0.5x",
+          "flying": "0.5x",
+          "ground": "2x",
+          "steel": "0.5x"
+        }
+      },
+      {
+        "exp": "170",
+        "id": "112",
+        "name": "Rhydon",
+        "stats": {
+          "Attack": "130",
+          "Defense": "120",
+          "HP": "105",
+          "Sp Atk": "45",
+          "Sp Def": "45",
+          "Speed": "40"
+        },
+        "types": [
+          "rock",
+          "ground"
+        ],
+        "when_attacked": {
+          "electric": "0x",
+          "fighting": "2x",
+          "fire": "0.5x",
+          "flying": "0.5x",
+          "grass": "4x",
+          "ice": "2x",
+          "normal": "0.5x",
+          "poison": "0.25x",
+          "rock": "0.5x",
+          "steel": "2x",
+          "water": "4x"
+        }
+      },
+      {
+        "exp": "265",
+        "id": "160",
+        "name": "Feraligatr",
+        "stats": {
+          "Attack": "105",
+          "Defense": "100",
+          "HP": "85",
+          "Sp Atk": "79",
+          "Sp Def": "83",
+          "Speed": "78"
+        },
+        "types": [
+          "water"
+        ],
+        "when_attacked": {
+          "electric": "2x",
+          "fire": "0.5x",
+          "grass": "2x",
+          "ice": "0.5x",
+          "steel": "0.5x",
+          "water": "0.5x"
+        }
+      },
+      {
+        "exp": "194",
+        "id": "59",
+        "name": "Arcanine",
+        "stats": {
+          "Attack": "110",
+          "Defense": "80",
+          "HP": "90",
+          "Sp Atk": "100",
+          "Sp Def": "80",
+          "Speed": "95"
+        },
+        "types": [
+          "fire"
+        ],
+        "when_attacked": {
+          "fairy": "0.5x",
+          "fire": "0.5x",
+          "ground": "2x",
+          "ice": "0.5x",
+          "rock": "2x",
+          "steel": "0.5x",
+          "water": "2x"
+        }
+      }
+    ]
+  }
+]

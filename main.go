@@ -26,6 +26,7 @@ func main() {
 		case 1:
 			fmt.Println("Launching Pokecat...")
 			cmd := exec.Command("go", "run", "pokecat/player.go")
+			cmd.Stdin = os.Stdin
 			cmd.Stdout = os.Stdout
 			cmd.Stderr = os.Stderr
 
