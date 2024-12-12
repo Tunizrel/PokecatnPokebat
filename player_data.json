@@ -157,5 +157,160 @@
         }
       }
     ]
+  },
+  {
+    "player_name": "totuan",
+    "pokemons": [
+      {
+        "exp": "122",
+        "id": "17",
+        "name": "Pidgeotto",
+        "stats": {
+          "Attack": "60",
+          "Defense": "55",
+          "HP": "63",
+          "Sp Atk": "50",
+          "Sp Def": "50",
+          "Speed": "71"
+        },
+        "types": [
+          "flying",
+          "normal"
+        ],
+        "when_attacked": {
+          "bug": "0.5x",
+          "electric": "2x",
+          "ghost": "0x",
+          "grass": "0.5x",
+          "ground": "0x",
+          "ice": "2x",
+          "rock": "2x"
+        }
+      },
+      {
+        "exp": "158",
+        "id": "119",
+        "name": "Seaking",
+        "stats": {
+          "Attack": "92",
+          "Defense": "65",
+          "HP": "80",
+          "Sp Atk": "65",
+          "Sp Def": "80",
+          "Speed": "68"
+        },
+        "types": [
+          "water"
+        ],
+        "when_attacked": {
+          "electric": "2x",
+          "fire": "0.5x",
+          "grass": "2x",
+          "ice": "0.5x",
+          "steel": "0.5x",
+          "water": "0.5x"
+        }
+      },
+      {
+        "exp": "149",
+        "id": "192",
+        "name": "Sunflora",
+        "stats": {
+          "Attack": "75",
+          "Defense": "55",
+          "HP": "75",
+          "Sp Atk": "105",
+          "Sp Def": "85",
+          "Speed": "30"
+        },
+        "types": [
+          "grass"
+        ],
+        "when_attacked": {
+          "bug": "2x",
+          "electric": "0.5x",
+          "fire": "2x",
+          "flying": "2x",
+          "grass": "0.5x",
+          "ice": "2x",
+          "poison": "2x",
+          "water": "0.5x"
+        }
+      },
+      {
+        "exp": "340",
+        "id": "150",
+        "name": "Mewtwo",
+        "stats": {
+          "Attack": "110",
+          "Defense": "90",
+          "HP": "106",
+          "Sp Atk": "154",
+          "Sp Def": "90",
+          "Speed": "130"
+        },
+        "types": [
+          "psychic"
+        ],
+        "when_attacked": {
+          "bug": "2x",
+          "dragon": "2x",
+          "fighting": "0.5x",
+          "ghost": "2x",
+          "psychic": "0.5x"
+        }
+      },
+      {
+        "exp": "240",
+        "id": "18",
+        "name": "Pidgeot",
+        "stats": {
+          "Attack": "80",
+          "Defense": "75",
+          "HP": "83",
+          "Sp Atk": "70",
+          "Sp Def": "70",
+          "Speed": "101"
+        },
+        "types": [
+          "flying",
+          "normal"
+        ],
+        "when_attacked": {
+          "bug": "0.5x",
+          "electric": "2x",
+          "ghost": "0x",
+          "grass": "0.5x",
+          "ground": "0x",
+          "ice": "2x",
+          "rock": "2x"
+        }
+      },
+      {
+        "exp": "158",
+        "id": "28",
+        "name": "Sandslash",
+        "stats": {
+          "Attack": "100",
+          "Defense": "110",
+          "HP": "75",
+          "Sp Atk": "45",
+          "Sp Def": "55",
+          "Speed": "65"
+        },
+        "types": [
+          "ground"
+        ],
+        "when_attacked": {
+          "electric": "0x",
+          "grass": "2x",
+          "ground": "0.5x",
+          "ice": "2x",
+          "poison": "0.5x",
+          "rock": "0.5x",
+          "water": "2x"
+        }
+      }
+    ]
   }
 ]

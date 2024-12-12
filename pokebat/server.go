@@ -50,7 +50,7 @@ func main() {
 	}
 
 	// Start server
-	listener, err := net.Listen("tcp", ":8080")
+	listener, err := net.Listen("tcp", ":8081")
 	if err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
