@@ -42,7 +42,7 @@ func main() {
 	}()
 
 	var playerName, password string
-	fmt.Print("Enter your name: ")
+	fmt.Print("Enter your username: ")
 	fmt.Scanln(&playerName)
 
 	conn, err := net.Dial("tcp", "localhost:8080")
