@@ -8,6 +8,11 @@ import (
 	"strings"
 )
 
+type Player struct{
+	Username string `json:"Name"`
+	Password string `json:"Password"`
+	player_name string `json:"player_name"`
+}
 func main() {
 	conn, err := net.Dial("tcp", "localhost:8081")
 	if err != nil {

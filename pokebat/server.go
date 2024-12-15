@@ -9,6 +9,7 @@ import (
 	"net"
 	"strconv"
 	"strings"
+	"os"
 )
 
 type Pokemon struct {
@@ -38,7 +39,8 @@ type Player struct {
 
 func main() {
 	// Load Pokémon data
-	file, err := ioutil.ReadFile("../pokedex.json")
+	// file, err := ioutil.ReadFile("../pokedex.json")
+	file, err := os.ReadFile("../pokedex.json")
 	if err != nil {
 		log.Fatalf("Failed to load pokedex.json: %v", err)
 	}
