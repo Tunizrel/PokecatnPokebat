@@ -1,0 +1,332 @@
+[
+  {
+    "player_name": "duccap",
+    "pokemons": [
+      {
+        "exp": "71",
+        "id": "138",
+        "name": "Omanyte",
+        "stats": {
+          "Attack": "40",
+          "Defense": "100",
+          "HP": "35",
+          "Sp Atk": "90",
+          "Sp Def": "55",
+          "Speed": "35"
+        },
+        "types": [
+          "water",
+          "rock"
+        ],
+        "when_attacked": {
+          "electric": "2x",
+          "fighting": "2x",
+          "fire": "0.25x",
+          "flying": "0.5x",
+          "grass": "4x",
+          "ground": "2x",
+          "ice": "0.5x",
+          "normal": "0.5x",
+          "poison": "0.5x"
+        }
+      },
+      {
+        "exp": "184",
+        "id": "134",
+        "name": "Vaporeon",
+        "stats": {
+          "Attack": "65",
+          "Defense": "60",
+          "HP": "130",
+          "Sp Atk": "110",
+          "Sp Def": "95",
+          "Speed": "65"
+        },
+        "types": [
+          "water"
+        ],
+        "when_attacked": {
+          "electric": "2x",
+          "fire": "0.5x",
+          "grass": "2x",
+          "ice": "0.5x",
+          "steel": "0.5x",
+          "water": "0.5x"
+        }
+      },
+      {
+        "exp": "62",
+        "id": "92",
+        "name": "Gastly",
+        "stats": {
+          "Attack": "35",
+          "Defense": "30",
+          "HP": "30",
+          "Sp Atk": "100",
+          "Sp Def": "35",
+          "Speed": "80"
+        },
+        "types": [
+          "ghost",
+          "poison"
+        ],
+        "when_attacked": {
+          "bug": "0.25x",
+          "dark": "2x",
+          "fairy": "0.5x",
+          "fighting": "0x",
+          "ghost": "2x",
+          "grass": "0.5x",
+          "ground": "2x",
+          "normal": "0x",
+          "poison": "0.25x",
+          "psychic": "2x"
+        }
+      },
+      {
+        "exp": "165",
+        "id": "178",
+        "name": "Xatu",
+        "stats": {
+          "Attack": "75",
+          "Defense": "70",
+          "HP": "65",
+          "Sp Atk": "95",
+          "Sp Def": "70",
+          "Speed": "95"
+        },
+        "types": [
+          "psychic",
+          "flying"
+        ],
+        "when_attacked": {
+          "dragon": "2x",
+          "electric": "2x",
+          "fighting": "0.25x",
+          "ghost": "2x",
+          "grass": "0.5x",
+          "ground": "0x",
+          "ice": "2x",
+          "psychic": "0.5x",
+          "rock": "2x"
+        }
+      },
+      {
+        "exp": "242",
+        "id": "36",
+        "name": "Clefable",
+        "stats": {
+          "Attack": "70",
+          "Defense": "73",
+          "HP": "95",
+          "Sp Atk": "95",
+          "Sp Def": "90",
+          "Speed": "60"
+        },
+        "types": [
+          "fairy"
+        ],
+        "when_attacked": {
+          "bug": "0.5x",
+          "dark": "0.5x",
+          "dragon": "0x",
+          "fighting": "0.5x",
+          "poison": "2x",
+          "steel": "2x"
+        }
+      },
+      {
+        "exp": "63",
+        "id": "79",
+        "name": "Slowpoke",
+        "stats": {
+          "Attack": "65",
+          "Defense": "65",
+          "HP": "90",
+          "Sp Atk": "40",
+          "Sp Def": "40",
+          "Speed": "15"
+        },
+        "types": [
+          "psychic",
+          "water"
+        ],
+        "when_attacked": {
+          "bug": "2x",
+          "dragon": "2x",
+          "electric": "2x",
+          "fighting": "0.5x",
+          "fire": "0.5x",
+          "ghost": "2x",
+          "grass": "2x",
+          "ice": "0.5x",
+          "psychic": "0.5x",
+          "steel": "0.5x",
+          "water": "0.5x"
+        }
+      }
+    ]
+  },
+  {
+    "player_name": "totuan",
+    "pokemons": [
+      {
+        "exp": "142",
+        "id": "67",
+        "name": "Machoke",
+        "stats": {
+          "Attack": "100",
+          "Defense": "70",
+          "HP": "80",
+          "Sp Atk": "50",
+          "Sp Def": "60",
+          "Speed": "45"
+        },
+        "types": [
+          "fighting"
+        ],
+        "when_attacked": {
+          "bug": "0.5x",
+          "dark": "0.5x",
+          "fairy": "2x",
+          "flying": "2x",
+          "grass": "0.5x",
+          "psychic": "2x",
+          "rock": "0.5x"
+        }
+      },
+      {
+        "exp": "147",
+        "id": "148",
+        "name": "Dragonair",
+        "stats": {
+          "Attack": "84",
+          "Defense": "65",
+          "HP": "61",
+          "Sp Atk": "70",
+          "Sp Def": "70",
+          "Speed": "70"
+        },
+        "types": [
+          "dragon"
+        ],
+        "when_attacked": {
+          "dragon": "2x",
+          "electric": "0.5x",
+          "fairy": "2x",
+          "fire": "0.5x",
+          "grass": "0.5x",
+          "ice": "2x",
+          "water": "0.5x"
+        }
+      },
+      {
+        "exp": "172",
+        "id": "125",
+        "name": "Electabuzz",
+        "stats": {
+          "Attack": "83",
+          "Defense": "57",
+          "HP": "65",
+          "Sp Atk": "95",
+          "Sp Def": "85",
+          "Speed": "105"
+        },
+        "types": [
+          "electric"
+        ],
+        "when_attacked": {
+          "electric": "0.5x",
+          "flying": "0.5x",
+          "ground": "2x",
+          "steel": "0.5x"
+        }
+      }
+    ]
+  },
+  {
+    "player_name": "letuan",
+    "pokemons": [
+      {
+        "exp": "77",
+        "id": "108",
+        "name": "Lickitung",
+        "stats": {
+          "Attack": "55",
+          "Defense": "75",
+          "HP": "90",
+          "Sp Atk": "60",
+          "Sp Def": "75",
+          "Speed": "30"
+        },
+        "types": [
+          "normal"
+        ],
+        "when_attacked": {
+          "fighting": "2x",
+          "ghost": "0x"
+        }
+      },
+      {
+        "exp": "163",
+        "id": "82",
+        "name": "Magneton",
+        "stats": {
+          "Attack": "60",
+          "Defense": "95",
+          "HP": "50",
+          "Sp Atk": "120",
+          "Sp Def": "70",
+          "Speed": "70"
+        },
+        "types": [
+          "electric",
+          "steel"
+        ],
+        "when_attacked": {
+          "bug": "0.5x",
+          "dragon": "0.5x",
+          "electric": "0.5x",
+          "fairy": "0.5x",
+          "fighting": "2x",
+          "fire": "2x",
+          "flying": "0.25x",
+          "grass": "0.5x",
+          "ground": "4x",
+          "ice": "0.5x",
+          "normal": "0.5x",
+          "poison": "0x",
+          "psychic": "0.5x",
+          "rock": "0.5x",
+          "steel": "0.25x"
+        }
+      },
+      {
+        "exp": "245",
+        "id": "182",
+        "name": "Bellossom",
+        "stats": {
+          "Attack": "80",
+          "Defense": "95",
+          "HP": "75",
+          "Sp Atk": "90",
+          "Sp Def": "100",
+          "Speed": "50"
+        },
+        "types": [
+          "grass"
+        ],
+        "when_attacked": {
+          "bug": "2x",
+          "electric": "0.5x",
+          "fire": "2x",
+          "flying": "2x",
+          "grass": "0.5x",
+          "ice": "2x",
+          "poison": "2x",
+          "water": "0.5x"
+        }
+      }
+    ]
+  }
+]

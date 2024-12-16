@@ -3,9 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	// "io/ioutil"
 	"log"
-	//"math/rand"
+	"math/rand"
+	"time"
 	"net"
 	"strconv"
 	"strings"
@@ -31,26 +32,13 @@ type Stats struct {
 }
 
 type Player struct {
-	Name    string
+	Name    string  `json:"name"`
 	Pokemons []*Pokemon
 	Active  *Pokemon
 	Conn    net.Conn
 }
 
 func main() {
-	// Load Pokémon data
-	// file, err := ioutil.ReadFile("../pokedex.json")
-	file, err := os.ReadFile("../pokedex.json")
-	if err != nil {
-		log.Fatalf("Failed to load pokedex.json: %v", err)
-	}
-
-	var pokemons []Pokemon
-	err = json.Unmarshal(file, &pokemons)
-	if err != nil {
-		log.Fatalf("Failed to parse pokedex.json: %v", err)
-	}
-
 	// Start server
 	listener, err := net.Listen("tcp", ":8081")
 	if err != nil {
@@ -59,6 +47,19 @@ func main() {
 	defer listener.Close()
 
 	fmt.Println("Server started. Waiting for players...")
+
+	// Load Pokémon data
+	file, err := os.ReadFile("../player_data.json")
+	if err != nil {
+		log.Fatalf("Failed to load player_data.json: %v", err)
+	}
+
+	var pokemons []Pokemon
+	err = json.Unmarshal(file, &pokemons)
+	if err != nil {
+		log.Fatalf("Failed to parse player_data.json: %v", err)
+	}
+
 
 	players := make([]*Player, 0, 2)
 	for len(players) < 2 {
@@ -76,7 +77,9 @@ func main() {
 
 	// Assign names and let players choose Pokémons
 	for i, player := range players {
-		player.Conn.Write([]byte(fmt.Sprintf("Enter your name, Player %d: ", i+1)))
+		
+		player.Conn.Write()
+		
 		name := make([]byte, 1024)
 		n, err := player.Conn.Read(name)
 		if err != nil {
@@ -137,6 +140,7 @@ func main() {
 	// Start battle loop
 	firstPlayer.Conn.Write([]byte(fmt.Sprintf("%s, prepare for battle!\n", firstPlayer.Name)))
 	secondPlayer.Conn.Write([]byte(fmt.Sprintf("%s, prepare for battle!\n", secondPlayer.Name)))
+    rand.New(rand.NewSource(time.Now().UnixNano()))
 	for {
 		for _, player := range []*Player{firstPlayer, secondPlayer} {
 			player.Conn.Write([]byte(fmt.Sprintf("Active Pokémon: %s\n", player.Active.Name)))
@@ -151,10 +155,12 @@ func main() {
 
 			switch strings.TrimSpace(string(choice[:n])) {
 			case "1":
-				damage := calculateDamage(player.Active, secondPlayer.Active)
+				element := player.Active.Types[0]
+				damage, attackType:= calculateDamage(player.Active, secondPlayer.Active, element)
 				secondPlayer.Active.Stats.HP -= damage
-				player.Conn.Write([]byte(fmt.Sprintf("You dealt %d damage!\n", damage)))
-				secondPlayer.Conn.Write([]byte(fmt.Sprintf("You received %d damage!\n", damage)))
+
+				player.Conn.Write([]byte(fmt.Sprintf("You used a %s attack! Damage dealt: %d\n", attackType, damage)))
+				secondPlayer.Conn.Write([]byte(fmt.Sprintf("You received a %s attack! Damage taken: %d\n", attackType, damage)))
 
 				if secondPlayer.Active.Stats.HP <= 0 {
 					secondPlayer.Conn.Write([]byte("Your Pokémon fainted!\n"))
@@ -177,12 +183,45 @@ func main() {
 	}
 }
 
-func calculateDamage(attacker, defender *Pokemon) int {
-	baseDamage := attacker.Stats.Attack - defender.Stats.Defense
-	if baseDamage < 0 {
-		baseDamage = 0
+func calculateDamage(attacker, defender *Pokemon, element string) (int, string) {
+	// Seed the random number generator
+	rand := rand.New(rand.NewSource(time.Now().UnixNano()))
+
+	// Randomly decide attack type: 60% for normal, 40% for special
+	isSpecial := rand.Intn(100) < 40 // 40% chance for special attack
+
+	var damage int
+	attackType := "normal"
+
+	if isSpecial {
+		// Calculate special damage
+		elementalMultiplier := getElementalMultiplier(element, defender.WhenAttacked)
+		damage = int(float64(attacker.Stats.SpAtk)*elementalMultiplier) - defender.Stats.SpDef
+		attackType = "special"
+	} else {
+		// Calculate normal damage
+		damage = attacker.Stats.Attack - defender.Stats.Defense
 	}
-	return baseDamage
+
+	// Ensure damage is not negative
+	if damage < 0 {
+		damage = 0
+	}
+
+	return damage, attackType
+}
+
+
+
+func getElementalMultiplier(element string, multipliers map[string]string) float64 {
+	multiplierStr, exists := multipliers[element]
+	if !exists {
+		return 1.0 // Default multiplier
+	}
+
+	var multiplier float64
+	fmt.Sscanf(multiplierStr, "%fx", &multiplier)
+	return multiplier
 }
 
 func switchPokemon(player *Player) {
