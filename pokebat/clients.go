@@ -6,7 +6,12 @@ import (
 	"net"
 	"os"
 	"strings"
+	"time"
+	"encoding/json"
 )
+
+
+
 
 func main() {
 	conn, err := net.Dial("tcp", "localhost:8081")
@@ -15,6 +20,44 @@ func main() {
 		return
 	}
 	defer conn.Close()
+
+	drawTitle()
+
+
+	var playerName, password string
+	fmt.Print("Enter your username: ")
+	fmt.Scanln(&playerName)
+
+	// Send player name to server for authentication
+	fmt.Print("Enter your password: ")
+	fmt.Scanln(&password)
+	authData := map[string]string{"name": playerName, "password": password}
+	authBytes, _ := json.Marshal(authData)
+	conn.Write(authBytes)
+
+	// Receive authentication response
+	buffer := make([]byte, 2048)
+	n, err := conn.Read(buffer)
+	if err != nil {
+		fmt.Printf("Failed to read authentication response: %v\n", err)
+		return
+	}
+
+	var authResponse map[string]interface{}
+	err = json.Unmarshal(buffer[:n], &authResponse)
+	if err != nil {
+		fmt.Printf("Failed to parse authentication response: %v\n", err)
+		return
+	}
+
+	if authResponse["status"] == "success" {
+		fmt.Printf("Welcome %s To Pokecat!!!\n", playerName)
+		drawTitle()
+		time.Sleep(2 * time.Second)
+	} else {
+		fmt.Println("Authentication failed. Exiting.")
+		return
+	}
 
 	go readMessages(conn)
 
@@ -35,4 +78,17 @@ func readMessages(conn net.Conn) {
 		}
 		fmt.Print(string(message[:length]))
 	}
+}
+
+
+func drawTitle() {
+	fmt.Println("                                                        ")
+	fmt.Println(" ######  ####### #    # ####### ######     #    ####### ")
+	fmt.Println(" #     # #     # #   #  #       #     #   # #      #    ")
+	fmt.Println(" #     # #     # #  #   #       #     #  #   #     #    ")
+	fmt.Println(" ######  #     # ###    #####   ######  #     #    #    ")
+	fmt.Println(" #       #     # #  #   #       #     # #######    #    ")
+	fmt.Println(" #       #     # #   #  #       #     # #     #    #    ")
+	fmt.Println(" #       ####### #    # ####### ######  #     #    #    ")
+	fmt.Println("                                                        ")
 }
