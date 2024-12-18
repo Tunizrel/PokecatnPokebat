@@ -56,42 +56,6 @@ func main() {
 		case 3:
 			fmt.Println("Exiting the Game Hub. Goodbye!")
 			os.Exit(0)
-		case 4:
-			scanner := bufio.NewScanner(os.Stdin)
-			fmt.Println("Username: ")
-			scanner.Scan()
-			username := scanner.Text()
-			fmt.Println("Password: ")
-			scanner.Scan()
-			password := scanner.Text()
-			account := Account{
-				Username: username,
-				Password: password,
-			}
-		
-			// Open or create the accounts.json file
-			file, err := os.Open("accounts.json")
-			if err != nil {
-				log.Fatalf("Failed to open accounts.json: %v", err)
-			}
-			defer file.Close()
-		
-			// Read existing accounts from the file
-			var accounts []Account
-			if err := json.NewDecoder(file).Decode(&accounts); err != nil && err.Error() != "EOF" {
-				log.Fatalf("Failed to decode accounts.json: %v", err)
-			}
-			// Append the new account to the list
-			accounts = append(accounts, account)
-			
-			// Write updated accounts back to the file
-			encoder := json.NewEncoder(file)
-			encoder.SetIndent("", "  ")
-			if err := encoder.Encode(accounts); err != nil {
-				log.Fatalf("Failed to write to accounts.json: %v", err)
-			}
-		
-			fmt.Println("Account successfully saved!")
 		
 		
 		default:

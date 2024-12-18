@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"math"
 	"net"
 	"os"
 	"strconv"
@@ -52,6 +53,7 @@ func main() {
 	fmt.Println("Server started. Waiting for players...")
 
 	players := make([]*Player, 0, 2)
+	playerNames := make(map[string]bool)
 
 	// Accept two players
 	for len(players) < 2 {
@@ -62,37 +64,46 @@ func main() {
 		}
 
 		username, authenticated := authenticatePlayer(conn)
-        if !authenticated {
-            log.Printf("Authentication failed for connection from %s", conn.RemoteAddr())
-            conn.Close()
-            return
-        }
+		if !authenticated {
+			log.Printf("Authentication failed for connection from %s", conn.RemoteAddr())
+			conn.Close()
+			continue
+		}
 
-        // Use username as player_name to load data
-        playerData, err := loadPlayerData("../player_data.json", username)
-        if err != nil {
-            log.Printf("Failed to load player data for %s: %v", username, err)
-            conn.Write([]byte("Failed to load player data. Exiting.\n"))
-            conn.Close()
-            return
-        }
+		// Check if the player is already in the battle
+		if playerNames[username] {
+			log.Printf("Player %s is already in the battle", username)
+			conn.Write([]byte("You are already in the battle. Exiting.\n"))
+			conn.Close()
+			continue
+		}
+
+		// Use username as player_name to load data
+		playerData, err := loadPlayerData("../player_data.json", username)
+		if err != nil {
+			log.Printf("Failed to load player data for %s: %v", username, err)
+			conn.Write([]byte("Failed to load player data. Exiting.\n"))
+			conn.Close()
+			continue
+		}
 
 		// Assign the connection to the player
 		playerData.Conn = conn
 
-		// Add the player to the players list
+		// Add the player to the players list and mark the player as joined
 		players = append(players, playerData)
+		playerNames[username] = true
 		log.Printf("Player %s has joined with their saved data.", username)
 
 		// Notify the player
-		conn.Write([]byte(fmt.Sprintf("Welcome back, %s! Your adventure continues.\n", playerData.Name)))
+		conn.Write([]byte(fmt.Sprintf("Welcome back, %s! AWAIT THE BATTLE!!!!!\n", playerData.Name)))
 
 		fmt.Printf("Player %d connected from %s\n", len(players), conn.RemoteAddr())
 	}
 
 	for _, player := range players {
-        selectPokemons(player)
-    }
+		selectPokemons(player)
+	}
 
 	// Simplify turn order logic based on speed
 	var firstPlayer, secondPlayer *Player
@@ -200,64 +211,68 @@ func loadPlayerData(filename, playerName string) (*Player, error) {
     return nil, fmt.Errorf("player data not found for player_name: %s", playerName)
 }
 
-// Example player initialization with Pokémon
-func initializePlayer(playerName string, conn net.Conn) *Player {
-    playerData, err := loadPlayerData("../player_data.json", playerName)
-    if err != nil {
-        log.Printf("Failed to load player data for %s: %v", playerName, err)
-        return nil
-    }
-    playerData.Conn = conn
-    return playerData
-}
-
-
 func selectPokemons(player *Player) {
-    for {
-        player.Conn.Write([]byte("Choose 3 Pokémon by entering their IDs (separated by space): "))
-        choice := make([]byte, 1024)
-        n, err := player.Conn.Read(choice)
-        if err != nil {
-            log.Printf("Failed to read Pokémon choice: %v", err)
-            continue
-        }
-        choices := strings.Fields(string(choice[:n]))
+	if len(player.Pokemons) < 3 {
+		player.Conn.Write([]byte("You need at least 3 Pokémon to battle. Please play PokéCat to catch more Pokémon.\n"))
+		player.Conn.Close()
+		return
+	}
 
-        if len(choices) > 3 {
-            player.Conn.Write([]byte("Invalid Pokémon selection. Please select no more than 3 Pokémon.\n"))
-            continue
-        }
+	for {
+		player.Conn.Write([]byte("Here are your available Pokémon:\n"))
+		for i, pokemon := range player.Pokemons {
+			// Format the types to uppercase
+			types := strings.ToUpper(strings.Join(pokemon.Types, ", "))
 
-        // Clear previous Pokémon selections
-        player.Pokemons = nil
+			// Create bar representations of the stats
+			hpBar := strings.Repeat("🟩", int(math.Ceil(float64(pokemon.Stats.HP)/10)))
+			attackBar := strings.Repeat("🟩", int(math.Ceil(float64(pokemon.Stats.Attack)/10)))
+			defenseBar := strings.Repeat("🟩", int(math.Ceil(float64(pokemon.Stats.Defense)/10)))
+			speedBar := strings.Repeat("🟩", int(math.Ceil(float64(pokemon.Stats.Speed)/10)))
+			spAtkBar := strings.Repeat("🟩", int(math.Ceil(float64(pokemon.Stats.SpAtk)/10)))
+			spDefBar := strings.Repeat("🟩", int(math.Ceil(float64(pokemon.Stats.SpDef)/10)))
 
-        // Check if the selected Pokémon IDs are valid and found in the available pool
-        for _, choiceID := range choices {
-            found := false
-            for _, pokemon := range player.Pokemons { // Loop through player's available Pokémon
-                // Debug print: Check what is being compared
-                log.Printf("Comparing player choice: %s with Pokémon ID: %s", choiceID, pokemon.ID)
+			// Send the formatted Pokémon details to the player
+			player.Conn.Write([]byte(fmt.Sprintf(
+				"%d. %s (ID: %s)\nType: %s\nHP:      %s\nAttack:  %s\nDefense: %s\nSpeed:   %s\nSp Atk:  %s\nSp Def:  %s\n\n",
+				i+1, pokemon.Name, pokemon.ID, types, hpBar, attackBar, defenseBar, speedBar, spAtkBar, spDefBar,
+			)))
+		}
+		player.Conn.Write([]byte("Choose 3 Pokémon by entering their numbers (separated by space): "))
+		choice := make([]byte, 1024)
+		n, err := player.Conn.Read(choice)
+		if err != nil {
+			log.Printf("Failed to read Pokémon choice: %v", err)
+			continue
+		}
+		choices := strings.Fields(string(choice[:n]))
 
-                // Compare string IDs
-                if pokemon.ID == choiceID {
-                    player.Pokemons = append(player.Pokemons, pokemon)
-                    found = true
-                    break
-                }
-            }
-            if !found {
-                player.Conn.Write([]byte(fmt.Sprintf("Pokémon with ID %s not found. Please try again.\n", choiceID)))
-                player.Pokemons = nil
-                break
-            }
-        }
+		if len(choices) != 3 {
+			player.Conn.Write([]byte("Invalid Pokémon selection. Please select exactly 3 Pokémon.\n"))
+			continue
+		}
 
-        // Ensure only valid Pokémon have been selected
-        if len(player.Pokemons) == len(choices) {
-            player.Active = player.Pokemons[0] // Set the first Pokémon as active
-            break
-        }
-    }
+		// Clear previous Pokémon selections
+		selectedPokemons := make([]*Pokemon, 0, 3)
+
+		// Check if the selected Pokémon numbers are valid
+		validSelection := true
+		for _, choiceNum := range choices {
+			index, err := strconv.Atoi(choiceNum)
+			if err != nil || index < 1 || index > len(player.Pokemons) {
+				player.Conn.Write([]byte(fmt.Sprintf("Invalid choice number: %s. Please try again.\n", choiceNum)))
+				validSelection = false
+				break
+			}
+			selectedPokemons = append(selectedPokemons, player.Pokemons[index-1])
+		}
+
+		if validSelection {
+			player.Pokemons = selectedPokemons
+			player.Active = player.Pokemons[0] // Set the first Pokémon as active
+			break
+		}
+	}
 }
 
 

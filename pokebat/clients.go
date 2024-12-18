@@ -74,6 +74,7 @@ func readMessages(conn net.Conn) {
 		length, err := conn.Read(message)
 		if err != nil {
 			fmt.Println("Failed to read message from server:", err)
+			os.Exit(1)
 			return
 		}
 		fmt.Print(string(message[:length]))
