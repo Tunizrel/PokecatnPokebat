@@ -7,12 +7,12 @@ import (
 	"os"
 	"strings"
 	"time"
+	"encoding/json"
 )
 
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
+
+
 func main() {
 	conn, err := net.Dial("tcp", "localhost:8081")
 	if err != nil {
@@ -21,8 +21,6 @@ func main() {
 	}
 	defer conn.Close()
 
-<<<<<<< Updated upstream
-=======
 	drawTitle()
 
 
@@ -61,8 +59,6 @@ func main() {
 		return
 	}
 
-
->>>>>>> Stashed changes
 	go readMessages(conn)
 
 	for {
@@ -83,8 +79,6 @@ func readMessages(conn net.Conn) {
 		fmt.Print(string(message[:length]))
 	}
 }
-<<<<<<< Updated upstream
-=======
 
 
 func drawTitle() {
@@ -98,4 +92,3 @@ func drawTitle() {
 	fmt.Println(" #       ####### #    # ####### ######  #     #    #    ")
 	fmt.Println("                                                        ")
 }
->>>>>>> Stashed changes

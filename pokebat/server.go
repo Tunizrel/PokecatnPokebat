@@ -3,28 +3,15 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-<<<<<<< Updated upstream
-	"io/ioutil"
-	"log"
-	//"math/rand"
-=======
 	"log"
 	"math/rand"
->>>>>>> Stashed changes
 	"net"
 	"os"
 	"strconv"
 	"strings"
-<<<<<<< Updated upstream
-=======
 	"time"
->>>>>>> Stashed changes
 )
 
-type Account struct {
-	Username string `json:"Name"`
-	Password string `json:"Password"`
-}
 
 type Pokemon struct {
 	ID           string            `json:"id"`
@@ -45,28 +32,6 @@ type Stats struct {
 }
 
 type Player struct {
-<<<<<<< Updated upstream
-	Name    string
-	Pokemons []*Pokemon
-	Active  *Pokemon
-	Conn    net.Conn
-}
-
-func main() {
-	// Load Pokémon data
-	file, err := ioutil.ReadFile("../pokedex.json")
-	if err != nil {
-		log.Fatalf("Failed to load pokedex.json: %v", err)
-	}
-
-	var pokemons []Pokemon
-	err = json.Unmarshal(file, &pokemons)
-	if err != nil {
-		log.Fatalf("Failed to parse pokedex.json: %v", err)
-	}
-
-	// Start server
-=======
 	Name     string     `json:"name"`
 	Pokemons []*Pokemon `json:"pokemons"`
 	Active   *Pokemon   `json:"active"`
@@ -75,7 +40,6 @@ func main() {
 
 func main() {
 	// Start the server
->>>>>>> Stashed changes
 	listener, err := net.Listen("tcp", ":8081")
 	if err != nil {
 		log.Fatalf("Failed to start server: %v", err)
@@ -123,61 +87,9 @@ func main() {
 		fmt.Printf("Player %d connected from %s\n", len(players), conn.RemoteAddr())
 	}
 
-<<<<<<< Updated upstream
-	// Assign names and let players choose Pokémons
-	for i, player := range players {
-		player.Conn.Write([]byte(fmt.Sprintf("Enter your name, Player %d: ", i+1)))
-		name := make([]byte, 1024)
-		n, err := player.Conn.Read(name)
-		if err != nil {
-			log.Printf("Failed to read player name: %v", err)
-			continue
-		}
-		player.Name = strings.TrimSpace(string(name[:n]))
-
-		for {
-			player.Conn.Write([]byte("Choose 3 Pokémon by entering their IDs (separated by space): "))
-			choice := make([]byte, 1024)
-			n, err = player.Conn.Read(choice)
-			if err != nil {
-				log.Printf("Failed to read Pokémon choice: %v", err)
-				continue
-			}
-			choices := strings.Fields(string(choice[:n]))
-
-			if len(choices) != 3 {
-				player.Conn.Write([]byte("Invalid Pokémon selection. Please select exactly 3 Pokémon.\n"))
-				continue
-			}
-
-			player.Pokemons = nil
-			for _, choice := range choices {
-				found := false
-				for _, pokemon := range pokemons {
-					if pokemon.ID == choice {
-						player.Pokemons = append(player.Pokemons, &pokemon)
-						found = true
-						break
-					}
-				}
-				if !found {
-					player.Conn.Write([]byte(fmt.Sprintf("Pokémon with ID %s not found. Please try again.\n", choice)))
-					player.Pokemons = nil
-					break
-				}
-			}
-
-			if len(player.Pokemons) == 3 {
-				player.Active = player.Pokemons[0]
-				break
-			}
-		}
-	}
-=======
 	for _, player := range players {
         selectPokemons(player)
     }
->>>>>>> Stashed changes
 
 	// Simplify turn order logic based on speed
 	var firstPlayer, secondPlayer *Player
@@ -190,14 +102,6 @@ func main() {
 	}
 
 	// Start battle loop
-<<<<<<< Updated upstream
-	firstPlayer.Conn.Write([]byte(fmt.Sprintf("%s, prepare for battle!\n", firstPlayer.Name)))
-	secondPlayer.Conn.Write([]byte(fmt.Sprintf("%s, prepare for battle!\n", secondPlayer.Name)))
-	for {
-		for _, player := range []*Player{firstPlayer, secondPlayer} {
-			player.Conn.Write([]byte(fmt.Sprintf("Active Pokémon: %s\n", player.Active.Name)))
-			player.Conn.Write([]byte("Choose action:\n1. Attack\n2. Switch Pokémon\nEnter your choice: "))
-=======
 	startBattle(firstPlayer, secondPlayer)
 }
 
@@ -359,21 +263,12 @@ func startBattle(firstPlayer, secondPlayer *Player) {
     firstPlayer.Conn.Write([]byte(fmt.Sprintf("%s, prepare for battle!\n", firstPlayer.Name)))
     secondPlayer.Conn.Write([]byte(fmt.Sprintf("%s, prepare for battle!\n", secondPlayer.Name)))
     rand.New(rand.NewSource(time.Now().UnixNano()))
->>>>>>> Stashed changes
 
     for {
         for _, player := range []*Player{firstPlayer, secondPlayer} {
             player.Conn.Write([]byte(fmt.Sprintf("Active Pokémon: %s\n", player.Active.Name)))
             player.Conn.Write([]byte("Choose action:\n1. Attack\n2. Switch Pokémon\nEnter your choice: "))
 
-<<<<<<< Updated upstream
-			switch strings.TrimSpace(string(choice[:n])) {
-			case "1":
-				damage := calculateDamage(player.Active, secondPlayer.Active)
-				secondPlayer.Active.Stats.HP -= damage
-				player.Conn.Write([]byte(fmt.Sprintf("You dealt %d damage!\n", damage)))
-				secondPlayer.Conn.Write([]byte(fmt.Sprintf("You received %d damage!\n", damage)))
-=======
             choice := make([]byte, 1024)
             n, err := player.Conn.Read(choice)
             if err != nil {
@@ -386,7 +281,6 @@ func startBattle(firstPlayer, secondPlayer *Player) {
                 element := player.Active.Types[0]
                 damage, attackType := calculateDamage(player.Active, secondPlayer.Active, element)
                 secondPlayer.Active.Stats.HP -= damage
->>>>>>> Stashed changes
 
                 player.Conn.Write([]byte(fmt.Sprintf("You used a %s attack! Damage dealt: %d\n", attackType, damage)))
                 secondPlayer.Conn.Write([]byte(fmt.Sprintf("You received a %s attack! Damage taken: %d\n", attackType, damage)))
@@ -412,14 +306,6 @@ func startBattle(firstPlayer, secondPlayer *Player) {
     }
 }
 
-<<<<<<< Updated upstream
-func calculateDamage(attacker, defender *Pokemon) int {
-	baseDamage := attacker.Stats.Attack - defender.Stats.Defense
-	if baseDamage < 0 {
-		baseDamage = 0
-	}
-	return baseDamage
-=======
 func calculateDamage(attacker, defender *Pokemon, element string) (int, string) {
     rand := rand.New(rand.NewSource(time.Now().UnixNano()))
 
@@ -456,7 +342,6 @@ func getElementalMultiplier(element string, multipliers map[string]string) float
 	var multiplier float64
 	fmt.Sscanf(multiplierStr, "%fx", &multiplier)
 	return multiplier
->>>>>>> Stashed changes
 }
 
 func switchPokemon(player *Player) {
