@@ -11,7 +11,10 @@ import (
 	"strings"
 	"time"
 )
-
+type Account struct{
+	Username string `json:"Name"`
+	Password string `json:"Password"`
+}
 
 type Pokemon struct {
 	ID           string            `json:"id"`
